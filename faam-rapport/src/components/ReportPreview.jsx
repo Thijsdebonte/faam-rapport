@@ -25,7 +25,7 @@ export default function ReportPreview({ project, vacancies, onBack }) {
         jsPDF: {
           unit: 'mm',
           format: 'a4',
-          orientation: 'portrait',
+          orientation: 'landscape',
         },
         pagebreak: { mode: 'avoid-all', before: '.pdf-page-break' },
       }

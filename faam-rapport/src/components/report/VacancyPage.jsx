@@ -7,7 +7,7 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
       className="pdf-page-break"
       style={{
         width: '100%',
-        aspectRatio: '210 / 297',
+        aspectRatio: '297 / 210',
         background: '#ffffff',
         display: 'flex',
         flexDirection: 'column',

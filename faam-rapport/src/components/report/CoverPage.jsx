@@ -3,7 +3,7 @@ export default function CoverPage({ project, vacancies }) {
     <div
       style={{
         width: '100%',
-        aspectRatio: '210 / 297',
+        aspectRatio: '297 / 210',
         background: '#000',
         display: 'flex',
         flexDirection: 'row',
