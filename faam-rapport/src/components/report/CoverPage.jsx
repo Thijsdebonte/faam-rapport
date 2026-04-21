@@ -17,19 +17,27 @@ export default function CoverPage({ project, vacancies }) {
       {/* Green accent line */}
       <div
         style={{
-          width: '48px',
+          width: '5cqw',
           height: '4px',
           background: '#00A850',
-          marginBottom: '32px',
+          marginBottom: '3.5cqw',
           borderRadius: '2px',
+          flexShrink: 0,
         }}
       />
 
-      {/* Logo */}
+      {/* Logo — explicit width:auto prevents print stretching; no objectFit needed */}
       <img
         src="/faam-logo-wit-groen.png"
         alt="Faam"
-        style={{ height: '36px', objectFit: 'contain', objectPosition: 'left', marginBottom: '48px' }}
+        style={{
+          height: '4cqw',
+          width: 'auto',
+          maxWidth: '22cqw',
+          display: 'block',
+          marginBottom: '5cqw',
+          flexShrink: 0,
+        }}
         crossOrigin="anonymous"
       />
 
@@ -38,9 +46,9 @@ export default function CoverPage({ project, vacancies }) {
         <p
           style={{
             color: 'rgba(255,255,255,0.5)',
-            fontSize: '1.8vw',
+            fontSize: '1.8cqw',
             fontWeight: '400',
-            margin: '0 0 8px',
+            margin: '0 0 0.8cqw',
             letterSpacing: '2px',
             textTransform: 'uppercase',
           }}
@@ -50,9 +58,9 @@ export default function CoverPage({ project, vacancies }) {
         <h1
           style={{
             color: 'white',
-            fontSize: '3.2vw',
+            fontSize: '3.2cqw',
             fontWeight: '800',
-            margin: '0 0 16px',
+            margin: '0 0 1.6cqw',
             lineHeight: 1.2,
             letterSpacing: '-0.5px',
           }}
@@ -63,9 +71,9 @@ export default function CoverPage({ project, vacancies }) {
           <p
             style={{
               color: '#00A850',
-              fontSize: '1.4vw',
+              fontSize: '1.4cqw',
               fontWeight: '600',
-              margin: '0 0 48px',
+              margin: '0 0 5cqw',
             }}
           >
             {formatDate(project.periodFrom)} – {formatDate(project.periodTo)}
@@ -79,10 +87,10 @@ export default function CoverPage({ project, vacancies }) {
           <p
             style={{
               color: 'rgba(255,255,255,0.4)',
-              fontSize: '1vw',
+              fontSize: '1cqw',
               textTransform: 'uppercase',
               letterSpacing: '1px',
-              marginBottom: '12px',
+              marginBottom: '1.2cqw',
               fontWeight: '600',
             }}
           >
@@ -94,20 +102,20 @@ export default function CoverPage({ project, vacancies }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                marginBottom: '8px',
+                gap: '1cqw',
+                marginBottom: '0.8cqw',
               }}
             >
               <span
                 style={{
-                  width: '20px',
-                  height: '20px',
+                  width: '2cqw',
+                  height: '2cqw',
                   background: '#00A850',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '10px',
+                  fontSize: '1cqw',
                   fontWeight: '700',
                   color: 'white',
                   flexShrink: 0,
@@ -115,7 +123,7 @@ export default function CoverPage({ project, vacancies }) {
               >
                 {i + 1}
               </span>
-              <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1.2vw' }}>
+              <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1.2cqw' }}>
                 {v.name}
               </span>
             </div>
@@ -132,11 +140,11 @@ export default function CoverPage({ project, vacancies }) {
           right: '12%',
           display: 'flex',
           alignItems: 'center',
-          gap: '12px',
+          gap: '1.2cqw',
         }}
       >
         <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
-        <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '1vw' }}>faam.nl</span>
+        <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '1cqw' }}>faam.nl</span>
       </div>
     </div>
   )

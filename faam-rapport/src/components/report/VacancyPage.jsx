@@ -31,10 +31,10 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
           <p
             style={{
               color: 'rgba(255,255,255,0.4)',
-              fontSize: '1vw',
+              fontSize: '1cqw',
               textTransform: 'uppercase',
               letterSpacing: '1.5px',
-              margin: '0 0 4px',
+              margin: '0 0 0.4cqw',
               fontWeight: '600',
             }}
           >
@@ -43,7 +43,7 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
           <h2
             style={{
               color: 'white',
-              fontSize: '2.2vw',
+              fontSize: '2.2cqw',
               fontWeight: '700',
               margin: 0,
               letterSpacing: '-0.3px',
@@ -52,15 +52,16 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
             {vacancy.name}
           </h2>
           {project.periodFrom && project.periodTo && (
-            <p style={{ color: '#04ba7e', fontSize: '1.1vw', margin: '4px 0 0', fontWeight: '500' }}>
+            <p style={{ color: '#04ba7e', fontSize: '1.1cqw', margin: '0.4cqw 0 0', fontWeight: '500' }}>
               {formatDate(project.periodFrom)} – {formatDate(project.periodTo)}
             </p>
           )}
         </div>
+        {/* Logo — width:auto prevents print stretching */}
         <img
           src="/faam-logo-wit-groen.png"
           alt="Faam"
-          style={{ height: '28px', objectFit: 'contain' }}
+          style={{ height: '3cqw', width: 'auto', maxWidth: '15cqw', display: 'block', flexShrink: 0 }}
           crossOrigin="anonymous"
         />
       </div>
@@ -77,10 +78,7 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
         }}
       >
         {/* Section: Faam.nl */}
-        <Section
-          title="Algemene informatie Faam.nl"
-          color="#3b82f6"
-        >
+        <Section title="Algemene informatie Faam.nl" color="#3b82f6">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2%' }}>
             <MetricCard
               label="Bezoekers vacaturepagina"
@@ -101,10 +99,7 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
         </Section>
 
         {/* Section: Meta Ads */}
-        <Section
-          title="Algemene informatie vacatureadvertenties"
-          color="#8b5cf6"
-        >
+        <Section title="Algemene informatie vacatureadvertenties" color="#8b5cf6">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2%' }}>
             <MetricCard
               label="Aantal vertoningen"
@@ -119,11 +114,8 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
           </div>
         </Section>
 
-        {/* Section: Applications */}
-        <Section
-          title="Sollicitaties"
-          color="#04ba7e"
-        >
+        {/* Section: Sollicitaties */}
+        <Section title="Sollicitaties" color="#04ba7e">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2%' }}>
             <MetricCard
               label="Aantal sollicitaties"
@@ -141,7 +133,7 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
                 border: '1px solid #d1fae5',
               }}
             >
-              <p style={{ color: '#059669', fontSize: '1.1vw', lineHeight: 1.5, margin: 0 }}>
+              <p style={{ color: '#059669', fontSize: '1.1cqw', lineHeight: 1.5, margin: 0 }}>
                 Via gerichte Meta-advertenties en een geoptimaliseerde vacaturepagina op Faam.nl
                 zijn actieve en passieve kandidaten bereikt voor de positie{' '}
                 <strong>{vacancy.name}</strong>.
@@ -163,10 +155,10 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
           flexShrink: 0,
         }}
       >
-        <span style={{ color: '#aaa', fontSize: '0.9vw' }}>
+        <span style={{ color: '#aaa', fontSize: '0.9cqw' }}>
           Vertrouwelijk · {project.clientName}
         </span>
-        <span style={{ color: '#04ba7e', fontSize: '0.9vw', fontWeight: '600' }}>faam.nl</span>
+        <span style={{ color: '#04ba7e', fontSize: '0.9cqw', fontWeight: '600' }}>faam.nl</span>
       </div>
     </div>
   )
@@ -179,14 +171,14 @@ function Section({ title, color, children }) {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: '0.8cqw',
           marginBottom: '2%',
         }}
       >
         <div
           style={{
             width: '3px',
-            height: '18px',
+            height: '1.8cqw',
             background: color,
             borderRadius: '2px',
             flexShrink: 0,
@@ -194,7 +186,7 @@ function Section({ title, color, children }) {
         />
         <h3
           style={{
-            fontSize: '1.1vw',
+            fontSize: '1.1cqw',
             fontWeight: '700',
             color: '#242a2e',
             margin: 0,
@@ -221,9 +213,9 @@ function MetricCard({ label, value, color, large = false }) {
         boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '6px',
+        gap: '0.6cqw',
         position: 'relative',
-        overflow: 'hidden',
+        /* overflow visible so print never clips the value number */
       }}
     >
       <div
@@ -234,11 +226,12 @@ function MetricCard({ label, value, color, large = false }) {
           right: 0,
           height: '3px',
           background: color,
+          borderRadius: '10px 10px 0 0',
         }}
       />
       <span
         style={{
-          fontSize: '1vw',
+          fontSize: '1cqw',
           color: '#888',
           fontWeight: '500',
           lineHeight: 1.3,
@@ -248,7 +241,7 @@ function MetricCard({ label, value, color, large = false }) {
       </span>
       <span
         style={{
-          fontSize: large ? '3.5vw' : '2.8vw',
+          fontSize: large ? '3.5cqw' : '2.8cqw',
           fontWeight: '800',
           color: '#242a2e',
           lineHeight: 1,

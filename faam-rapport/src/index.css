@@ -15,6 +15,12 @@ body {
   min-height: 100vh;
 }
 
+/* cqw units inside report pages are relative to the page container,
+   not the browser viewport — consistent between screen and print */
+.report-page {
+  container-type: inline-size;
+}
+
 /* ── Print / PDF export ── */
 @media print {
   @page {
@@ -33,7 +39,7 @@ body {
     display: none !important;
   }
 
-  /* Reset page shell so it doesn't add extra space */
+  /* Reset page shell */
   body {
     background: white !important;
     padding: 0 !important;
@@ -45,7 +51,7 @@ body {
     min-height: unset !important;
   }
 
-  /* Strip decorative wrapper around the report */
+  /* Strip decorative wrapper */
   .report-container {
     box-shadow: none !important;
     border-radius: 0 !important;
@@ -55,7 +61,7 @@ body {
     margin: 0 !important;
   }
 
-  /* Each .report-page fills exactly one A4 page */
+  /* Each .report-page = one A4 page */
   .report-page {
     width: 210mm !important;
     height: 297mm !important;
@@ -66,11 +72,10 @@ body {
     border-radius: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
-    /* aspectRatio no longer drives size in print — explicit w/h takes over */
     aspect-ratio: unset !important;
+    container-type: inline-size !important;
   }
 
-  /* No orphan page after the last element */
   .report-page:last-child {
     page-break-after: avoid !important;
     break-after: avoid !important;
