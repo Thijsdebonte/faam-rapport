@@ -15,8 +15,64 @@ body {
   min-height: 100vh;
 }
 
+/* ── Print / PDF export ── */
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  /* Preserve all background colors and images */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide all UI chrome */
   .no-print {
     display: none !important;
+  }
+
+  /* Reset page shell so it doesn't add extra space */
+  body {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #root {
+    background: white !important;
+    min-height: unset !important;
+  }
+
+  /* Strip decorative wrapper around the report */
+  .report-container {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Each .report-page fills exactly one A4 page */
+  .report-page {
+    width: 210mm !important;
+    height: 297mm !important;
+    overflow: hidden !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    /* aspectRatio no longer drives size in print — explicit w/h takes over */
+    aspect-ratio: unset !important;
+  }
+
+  /* No orphan page after the last element */
+  .report-page:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 }

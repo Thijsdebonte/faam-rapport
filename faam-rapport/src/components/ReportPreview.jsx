@@ -1,54 +1,29 @@
-import { useRef, useState } from 'react'
-import html2canvas from 'html2canvas'
-import { jsPDF } from 'jspdf'
+import { useRef } from 'react'
 import CoverPage from './report/CoverPage'
 import VacancyPage from './report/VacancyPage'
 
 export default function ReportPreview({ project, vacancies, onBack }) {
   const reportRef = useRef(null)
-  const [exporting, setExporting] = useState(false)
 
-  const handleExport = async () => {
-    setExporting(true)
-    try {
-      const pages = Array.from(reportRef.current.querySelectorAll('.report-page'))
-      if (!pages.length) throw new Error('Geen pagina-elementen gevonden')
-
-      const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' })
-      const pdfW = pdf.internal.pageSize.getWidth()
-      const pdfH = pdf.internal.pageSize.getHeight()
-
-      for (let i = 0; i < pages.length; i++) {
-        const canvas = await html2canvas(pages[i], {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff',
-        })
-        if (i > 0) pdf.addPage()
-        pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, pdfW, pdfH)
-      }
-
-      pdf.save(`${new Date().getFullYear()}_-_${project.clientName.replace(/\s+/g, '_')}_-_Wervingsrapport.pdf`)
-    } catch (err) {
-      alert('PDF export mislukt: ' + err.message)
-    } finally {
-      setExporting(false)
-    }
-  }
+  const handleExport = () => window.print()
 
   return (
     <div>
+      {/* Toolbar — hidden in print via .no-print */}
       <div
-        className="no-print flex items-center justify-between mb-6"
+        className="no-print"
         style={{
           background: 'white',
           borderRadius: '12px',
           padding: '16px 24px',
+          marginBottom: '24px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        <div className="flex items-center gap-4">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button
             onClick={onBack}
             style={{
@@ -70,33 +45,24 @@ export default function ReportPreview({ project, vacancies, onBack }) {
         </div>
         <button
           onClick={handleExport}
-          disabled={exporting}
           style={{
             padding: '12px 28px',
-            background: exporting ? '#ccc' : '#04ba7e',
+            background: '#04ba7e',
             color: 'white',
             border: 'none',
             borderRadius: '8px',
             fontWeight: '700',
-            cursor: exporting ? 'not-allowed' : 'pointer',
+            cursor: 'pointer',
             fontSize: '15px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
           }}
         >
-          {exporting ? (
-            <>
-              <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⟳</span>
-              Exporteren...
-            </>
-          ) : (
-            '↓ Exporteer als PDF'
-          )}
+          ↓ Exporteer als PDF
         </button>
       </div>
 
+      {/* Report pages — .report-container strips decoration in print */}
       <div
+        className="report-container"
         style={{
           background: 'white',
           borderRadius: '12px',
@@ -116,13 +82,6 @@ export default function ReportPreview({ project, vacancies, onBack }) {
           ))}
         </div>
       </div>
-
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   )
 }
