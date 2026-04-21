@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react'
+import html2canvas from 'html2canvas'
+import { jsPDF } from 'jspdf'
 import CoverPage from './report/CoverPage'
 import VacancyPage from './report/VacancyPage'
 
@@ -9,17 +11,12 @@ export default function ReportPreview({ project, vacancies, onBack }) {
   const handleExport = async () => {
     setExporting(true)
     try {
-      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-        import('html2canvas'),
-        import('jspdf'),
-      ])
-
       const pages = Array.from(reportRef.current.querySelectorAll('.report-page'))
       if (!pages.length) throw new Error('Geen pagina-elementen gevonden')
 
       const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' })
-      const pdfW = pdf.internal.pageSize.getWidth()   // 595.28 pt
-      const pdfH = pdf.internal.pageSize.getHeight()  // 841.89 pt
+      const pdfW = pdf.internal.pageSize.getWidth()
+      const pdfH = pdf.internal.pageSize.getHeight()
 
       for (let i = 0; i < pages.length; i++) {
         const canvas = await html2canvas(pages[i], {
@@ -28,13 +25,11 @@ export default function ReportPreview({ project, vacancies, onBack }) {
           logging: false,
           backgroundColor: '#ffffff',
         })
-        const imgData = canvas.toDataURL('image/jpeg', 0.98)
         if (i > 0) pdf.addPage()
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH)
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, pdfW, pdfH)
       }
 
-      const filename = `${new Date().getFullYear()}_-_${project.clientName.replace(/\s+/g, '_')}_-_Wervingsrapport.pdf`
-      pdf.save(filename)
+      pdf.save(`${new Date().getFullYear()}_-_${project.clientName.replace(/\s+/g, '_')}_-_Wervingsrapport.pdf`)
     } catch (err) {
       alert('PDF export mislukt: ' + err.message)
     } finally {
@@ -96,9 +91,7 @@ export default function ReportPreview({ project, vacancies, onBack }) {
               Exporteren...
             </>
           ) : (
-            <>
-              ↓ Exporteer als PDF
-            </>
+            '↓ Exporteer als PDF'
           )}
         </button>
       </div>
