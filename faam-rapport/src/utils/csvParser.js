@@ -10,36 +10,25 @@ export function parseMetaCSV(file) {
           const data = results.data
           if (!data.length) return reject(new Error('CSV is leeg'))
 
-          // Look for impressions and reach columns (case-insensitive, Dutch/English)
-          const row = data[data.length - 1] // take last row (often totals) or sum
-          const keys = Object.keys(row)
-
-          const impressionsKey = keys.find(k =>
-            /impressie|impression|vertoningen|vertoning/i.test(k)
-          )
-          const reachKey = keys.find(k =>
-            /bereik|reach|uniek bereik|unique reach/i.test(k)
-          )
-
-          // If no totals row, sum all rows
+          // Sum all data rows for Weergaven (impressions) and Bereik (reach)
           let impressions = 0
           let reach = 0
 
-          data.forEach(r => {
-            if (impressionsKey) {
-              const val = parseNumber(r[impressionsKey])
-              impressions += val
-            }
-            if (reachKey) {
-              const val = parseNumber(r[reachKey])
-              reach += val
-            }
+          data.forEach(row => {
+            impressions += parseNumber(row['Weergaven'])
+            reach += parseNumber(row['Bereik'])
           })
+
+          if (impressions === 0 && reach === 0) {
+            const keys = Object.keys(data[0])
+            return reject(new Error(
+              `Kolommen 'Weergaven' en 'Bereik' niet gevonden. Gevonden kolommen: ${keys.join(', ')}`
+            ))
+          }
 
           resolve({
             impressions: impressions || null,
             reach: reach || null,
-            rawKeys: keys,
             rowCount: data.length,
           })
         } catch (err) {
@@ -54,43 +43,71 @@ export function parseMetaCSV(file) {
 export function parseClarityCSV(file) {
   return new Promise((resolve, reject) => {
     Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
+      header: false,
+      skipEmptyLines: false,
       complete: (results) => {
         try {
-          const data = results.data
-          if (!data.length) return reject(new Error('CSV is leeg'))
+          const rows = results.data
 
-          const keys = Object.keys(data[0])
+          let visitors = null
+          let avgDuration = null
+          let avgScroll = null
+          let inScrollSection = false
+          let inActiveTimeSection = false
 
-          const visitorsKey = keys.find(k =>
-            /bezoeker|sessie|visitor|session|gebruiker|user/i.test(k)
-          )
-          const durationKey = keys.find(k =>
-            /duur|duration|tijd|time/i.test(k)
-          )
-          const scrollKey = keys.find(k =>
-            /scroll/i.test(k)
-          )
+          for (let i = 0; i < rows.length; i++) {
+            const row = rows[i]
+            const cols = row.map(c => String(c).trim())
 
-          let totalVisitors = 0
-          let totalDuration = 0
-          let totalScroll = 0
-          let count = 0
+            // Detect section headers
+            if (cols.includes('Schuifdiepte')) {
+              inScrollSection = true
+              inActiveTimeSection = false
+              continue
+            }
+            if (cols.includes('Actieve tijd besteed')) {
+              inActiveTimeSection = true
+              inScrollSection = false
+              continue
+            }
+            // Any new "Metrisch" section header resets both
+            if (cols[0] === 'Metrisch') {
+              inScrollSection = false
+              inActiveTimeSection = false
+            }
 
-          data.forEach(r => {
-            if (visitorsKey) totalVisitors += parseNumber(r[visitorsKey])
-            if (durationKey) totalDuration += parseNumber(r[durationKey])
-            if (scrollKey) totalScroll += parseNumber(r[scrollKey])
-            count++
-          })
+            // "Totaal aantal sessies" → third column is value
+            if (cols.some(c => c === 'Totaal aantal sessies')) {
+              const valIdx = cols.findIndex(c => c === 'Totaal aantal sessies') + 1
+              visitors = parseNumber(cols[valIdx])
+            }
+
+            // Under Schuifdiepte: "Gemiddeld" → next col is scroll%
+            if (inScrollSection && cols.some(c => c === 'Gemiddeld')) {
+              const valIdx = cols.findIndex(c => c === 'Gemiddeld') + 1
+              avgScroll = parseNumber(cols[valIdx])
+              inScrollSection = false
+            }
+
+            // Under Actieve tijd besteed: "Actieve tijd" → next col is seconds
+            if (inActiveTimeSection && cols.some(c => c === 'Actieve tijd')) {
+              const valIdx = cols.findIndex(c => c === 'Actieve tijd') + 1
+              avgDuration = Math.round(parseNumber(cols[valIdx]))
+              inActiveTimeSection = false
+            }
+          }
+
+          if (visitors === null && avgDuration === null && avgScroll === null) {
+            return reject(new Error(
+              'Kon geen bekende Clarity-metrics vinden. Controleer of dit een Clarity dashboard-export is.'
+            ))
+          }
 
           resolve({
-            visitors: totalVisitors || null,
-            avgDuration: count > 0 && totalDuration ? Math.round(totalDuration / count) : null,
-            avgScroll: count > 0 && totalScroll ? Math.round(totalScroll / count) : null,
-            rawKeys: keys,
-            rowCount: data.length,
+            visitors,
+            avgDuration,
+            avgScroll: avgScroll !== null ? Math.round(avgScroll) : null,
+            rowCount: rows.length,
           })
         } catch (err) {
           reject(err)
@@ -103,6 +120,22 @@ export function parseClarityCSV(file) {
 
 function parseNumber(val) {
   if (val === null || val === undefined || val === '') return 0
-  const cleaned = String(val).replace(/[^\d.,]/g, '').replace(',', '.')
-  return parseFloat(cleaned) || 0
+  // Handle Dutch number formatting: 1.987 (thousands) or 44,4 (decimal)
+  const s = String(val).trim()
+  // Remove quotes, currency symbols, spaces
+  const cleaned = s.replace(/[^0-9.,\-]/g, '')
+  // If both . and , present, the last one is the decimal separator
+  const lastDot = cleaned.lastIndexOf('.')
+  const lastComma = cleaned.lastIndexOf(',')
+  let normalized
+  if (lastDot > lastComma) {
+    // e.g. "1,234.56" — dot is decimal
+    normalized = cleaned.replace(/,/g, '')
+  } else if (lastComma > lastDot) {
+    // e.g. "1.234,56" or "44,4" — comma is decimal
+    normalized = cleaned.replace(/\./g, '').replace(',', '.')
+  } else {
+    normalized = cleaned
+  }
+  return parseFloat(normalized) || 0
 }
