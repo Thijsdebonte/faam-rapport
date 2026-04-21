@@ -1,6 +1,7 @@
 export default function CoverPage({ project, vacancies }) {
   return (
     <div
+      className="report-page"
       style={{
         width: '100%',
         aspectRatio: '210 / 297',
@@ -10,7 +11,6 @@ export default function CoverPage({ project, vacancies }) {
         justifyContent: 'center',
         position: 'relative',
         overflow: 'hidden',
-        pageBreakAfter: 'always',
         padding: '8% 12%',
       }}
     >

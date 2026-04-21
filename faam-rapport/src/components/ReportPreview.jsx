@@ -9,28 +9,32 @@ export default function ReportPreview({ project, vacancies, onBack }) {
   const handleExport = async () => {
     setExporting(true)
     try {
-      const html2pdf = (await import('html2pdf.js')).default
-      const element = reportRef.current
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ])
 
-      const opt = {
-        margin: 0,
-        filename: `${new Date().getFullYear()}_-_${project.clientName.replace(/\s+/g, '_')}_-_Wervingsrapport.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
+      const pages = Array.from(reportRef.current.querySelectorAll('.report-page'))
+      if (!pages.length) throw new Error('Geen pagina-elementen gevonden')
+
+      const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' })
+      const pdfW = pdf.internal.pageSize.getWidth()   // 595.28 pt
+      const pdfH = pdf.internal.pageSize.getHeight()  // 841.89 pt
+
+      for (let i = 0; i < pages.length; i++) {
+        const canvas = await html2canvas(pages[i], {
           scale: 2,
           useCORS: true,
-          letterRendering: true,
           logging: false,
-        },
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'portrait',
-        },
-        pagebreak: { mode: 'avoid-all', before: '.pdf-page-break' },
+          backgroundColor: '#ffffff',
+        })
+        const imgData = canvas.toDataURL('image/jpeg', 0.98)
+        if (i > 0) pdf.addPage()
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH)
       }
 
-      await html2pdf().set(opt).from(element).save()
+      const filename = `${new Date().getFullYear()}_-_${project.clientName.replace(/\s+/g, '_')}_-_Wervingsrapport.pdf`
+      pdf.save(filename)
     } catch (err) {
       alert('PDF export mislukt: ' + err.message)
     } finally {

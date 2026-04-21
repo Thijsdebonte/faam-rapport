@@ -4,7 +4,7 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
 
   return (
     <div
-      className="pdf-page-break"
+      className="report-page"
       style={{
         width: '100%',
         aspectRatio: '210 / 297',
@@ -14,7 +14,6 @@ export default function VacancyPage({ vacancy, project, isFirst }) {
         position: 'relative',
         fontFamily: 'system-ui, -apple-system, sans-serif',
         overflow: 'hidden',
-        pageBreakBefore: 'always',
       }}
     >
       {/* Header */}
