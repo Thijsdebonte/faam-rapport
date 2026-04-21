@@ -2,15 +2,30 @@ import { useRef, useState } from 'react'
 import CoverPage from './report/CoverPage'
 import VacancyPage from './report/VacancyPage'
 
+// A4 landscape at 96 dpi
+const PAGE_W = 1123
+const PAGE_H = 794
+
+// Preview fits inside the 900px max-width container (minus 48px padding)
+const PREVIEW_W = 852
+const SCALE = PREVIEW_W / PAGE_W  // ≈ 0.758
+
 export default function ReportPreview({ project, vacancies, onBack }) {
   const reportRef = useRef(null)
+  const scalerRef = useRef(null)
   const [exporting, setExporting] = useState(false)
+
+  const numPages = 1 + vacancies.length
+  const previewH = Math.round(PAGE_H * SCALE) * numPages
 
   const handleExport = async () => {
     setExporting(true)
+
+    // Remove scale transform so html2canvas captures real A4 pixels
+    if (scalerRef.current) scalerRef.current.style.transform = 'none'
+
     try {
       const html2pdf = (await import('html2pdf.js')).default
-      const element = reportRef.current
 
       const opt = {
         margin: 0,
@@ -21,35 +36,45 @@ export default function ReportPreview({ project, vacancies, onBack }) {
           useCORS: true,
           letterRendering: true,
           logging: false,
+          width: PAGE_W,
         },
         jsPDF: {
-          unit: 'mm',
-          format: 'a4',
+          unit: 'px',
+          format: [PAGE_W, PAGE_H],
           orientation: 'landscape',
         },
-        pagebreak: { mode: 'avoid-all', before: '.pdf-page-break' },
+        pagebreak: { mode: 'css', before: '.pdf-page-break' },
       }
 
-      await html2pdf().set(opt).from(element).save()
+      await html2pdf().set(opt).from(reportRef.current).save()
     } catch (err) {
       alert('PDF export mislukt: ' + err.message)
     } finally {
+      // Restore scale transform
+      if (scalerRef.current) {
+        scalerRef.current.style.transform = `scale(${SCALE})`
+      }
       setExporting(false)
     }
   }
 
   return (
     <div>
+      {/* Toolbar */}
       <div
-        className="no-print flex items-center justify-between mb-6"
+        className="no-print"
         style={{
           background: 'white',
           borderRadius: '12px',
           padding: '16px 24px',
+          marginBottom: '24px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        <div className="flex items-center gap-4">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button
             onClick={onBack}
             style={{
@@ -66,7 +91,10 @@ export default function ReportPreview({ project, vacancies, onBack }) {
             ← Terug
           </button>
           <span style={{ color: '#666', fontSize: '14px' }}>
-            Voorvertoning rapport voor <strong>{project.clientName}</strong>
+            Voorvertoning — <strong>{project.clientName}</strong>
+            <span style={{ color: '#aaa', marginLeft: '8px' }}>
+              ({numPages} pagina{numPages !== 1 ? "'s" : ''})
+            </span>
           </span>
         </div>
         <button
@@ -92,31 +120,39 @@ export default function ReportPreview({ project, vacancies, onBack }) {
               Exporteren...
             </>
           ) : (
-            <>
-              ↓ Exporteer als PDF
-            </>
+            '↓ Exporteer als PDF'
           )}
         </button>
       </div>
 
+      {/* Scaled preview container */}
       <div
         style={{
-          background: 'white',
-          borderRadius: '12px',
+          width: `${PREVIEW_W}px`,
+          height: `${previewH}px`,
           overflow: 'hidden',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+          borderRadius: '8px',
+          boxShadow: '0 4px 32px rgba(0,0,0,0.18)',
         }}
       >
-        <div ref={reportRef}>
-          <CoverPage project={project} vacancies={vacancies} />
-          {vacancies.map((vacancy, i) => (
-            <VacancyPage
-              key={vacancy.id}
-              vacancy={vacancy}
-              project={project}
-              isFirst={i === 0}
-            />
-          ))}
+        <div
+          ref={scalerRef}
+          style={{
+            transform: `scale(${SCALE})`,
+            transformOrigin: 'top left',
+            width: `${PAGE_W}px`,
+          }}
+        >
+          <div ref={reportRef}>
+            <CoverPage project={project} vacancies={vacancies} />
+            {vacancies.map((vacancy) => (
+              <VacancyPage
+                key={vacancy.id}
+                vacancy={vacancy}
+                project={project}
+              />
+            ))}
+          </div>
         </div>
       </div>
 

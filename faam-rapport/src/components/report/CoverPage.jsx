@@ -1,94 +1,109 @@
+// Rendered at exactly A4 landscape: 1123 × 794 px (96 dpi)
 export default function CoverPage({ project, vacancies }) {
   return (
     <div
       style={{
-        width: '100%',
-        aspectRatio: '297 / 210',
-        background: '#000',
+        width: '1123px',
+        height: '794px',
+        background: '#111',
         display: 'flex',
         flexDirection: 'row',
-        position: 'relative',
         overflow: 'hidden',
-        pageBreakAfter: 'always',
+        flexShrink: 0,
+        fontFamily: 'system-ui, -apple-system, sans-serif',
       }}
     >
-      {/* Left half: personnel photo */}
-      <div
-        style={{
-          width: '50%',
-          height: '100%',
-          flexShrink: 0,
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-      >
+      {/* ── Left: full-height photo ── */}
+      <div style={{ width: '490px', height: '794px', flexShrink: 0, overflow: 'hidden' }}>
         <img
           src="/personeelsfoto.jpg"
           alt=""
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center',
-            display: 'block',
-          }}
           crossOrigin="anonymous"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
         />
       </div>
 
-      {/* Right half: content */}
+      {/* ── Right: dark content panel ── */}
       <div
         style={{
-          width: '50%',
-          height: '100%',
+          flex: 1,
+          height: '794px',
+          background: '#111',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
-          padding: '8% 8% 8% 10%',
+          justifyContent: 'space-between',
+          padding: '52px 56px 44px 60px',
           position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        {/* Green accent line */}
+        {/* Subtle diagonal decoration */}
         <div
           style={{
-            width: '48px',
-            height: '4px',
-            background: '#00A850',
-            marginBottom: '32px',
-            borderRadius: '2px',
+            position: 'absolute',
+            bottom: '-60px',
+            right: '-60px',
+            width: '260px',
+            height: '260px',
+            borderRadius: '50%',
+            border: '1px solid rgba(4,186,126,0.12)',
+            pointerEvents: 'none',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '-20px',
+            right: '-20px',
+            width: '180px',
+            height: '180px',
+            borderRadius: '50%',
+            border: '1px solid rgba(4,186,126,0.08)',
+            pointerEvents: 'none',
           }}
         />
 
-        {/* Logo */}
-        <img
-          src="/faam-logo-wit-groen.png"
-          alt="Faam"
-          style={{ height: '36px', objectFit: 'contain', objectPosition: 'left', marginBottom: '48px' }}
-          crossOrigin="anonymous"
-        />
-
-        {/* Main heading */}
+        {/* Top: logo */}
         <div>
+          <img
+            src="/faam-logo-wit-groen.png"
+            alt="Faam"
+            crossOrigin="anonymous"
+            style={{ height: '38px', objectFit: 'contain', objectPosition: 'left', display: 'block' }}
+          />
+        </div>
+
+        {/* Middle: main text block */}
+        <div>
+          <div
+            style={{
+              width: '44px',
+              height: '3px',
+              background: '#04ba7e',
+              borderRadius: '2px',
+              marginBottom: '28px',
+            }}
+          />
           <p
             style={{
-              color: 'rgba(255,255,255,0.5)',
-              fontSize: '1.8vw',
-              fontWeight: '400',
-              margin: '0 0 8px',
-              letterSpacing: '2px',
+              color: 'rgba(255,255,255,0.38)',
+              fontSize: '11px',
+              fontWeight: '600',
+              letterSpacing: '3px',
               textTransform: 'uppercase',
+              margin: '0 0 14px',
             }}
           >
-            Wervingsrapport
+            Wervingsrapport voor
           </p>
           <h1
             style={{
-              color: 'white',
-              fontSize: '3.2vw',
+              color: '#ffffff',
+              fontSize: '42px',
               fontWeight: '800',
-              margin: '0 0 16px',
-              lineHeight: 1.2,
+              lineHeight: 1.15,
               letterSpacing: '-0.5px',
+              margin: '0 0 16px',
             }}
           >
             {project.clientName}
@@ -96,81 +111,72 @@ export default function CoverPage({ project, vacancies }) {
           {project.periodFrom && project.periodTo && (
             <p
               style={{
-                color: '#00A850',
-                fontSize: '1.4vw',
+                color: '#04ba7e',
+                fontSize: '15px',
                 fontWeight: '600',
-                margin: '0 0 48px',
+                margin: '0 0 44px',
               }}
             >
               {formatDate(project.periodFrom)} – {formatDate(project.periodTo)}
             </p>
           )}
-        </div>
 
-        {/* Vacancies list */}
-        {vacancies.length > 0 && (
-          <div>
-            <p
-              style={{
-                color: 'rgba(255,255,255,0.4)',
-                fontSize: '1vw',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                marginBottom: '12px',
-                fontWeight: '600',
-              }}
-            >
-              Vacatures
-            </p>
-            {vacancies.map((v, i) => (
-              <div
-                key={v.id}
+          {vacancies.length > 0 && (
+            <div>
+              <p
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  marginBottom: '8px',
+                  color: 'rgba(255,255,255,0.3)',
+                  fontSize: '10px',
+                  fontWeight: '700',
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  margin: '0 0 12px',
                 }}
               >
-                <span
+                Vacatures in dit rapport
+              </p>
+              {vacancies.map((v, i) => (
+                <div
+                  key={v.id}
                   style={{
-                    width: '20px',
-                    height: '20px',
-                    background: '#00A850',
-                    borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '10px',
-                    fontWeight: '700',
-                    color: 'white',
-                    flexShrink: 0,
+                    gap: '10px',
+                    marginBottom: '8px',
                   }}
                 >
-                  {i + 1}
-                </span>
-                <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1.2vw' }}>
-                  {v.name}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+                  <span
+                    style={{
+                      width: '20px',
+                      height: '20px',
+                      background: '#04ba7e',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '10px',
+                      fontWeight: '700',
+                      color: 'white',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {i + 1}
+                  </span>
+                  <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px' }}>
+                    {v.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-        {/* Bottom decoration */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '8%',
-            left: '10%',
-            right: '8%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-          }}
-        >
+        {/* Bottom: divider + faam.nl */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
-          <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '1vw' }}>faam.nl</span>
+          <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '11px', letterSpacing: '1px' }}>
+            faam.nl
+          </span>
         </div>
       </div>
     </div>
