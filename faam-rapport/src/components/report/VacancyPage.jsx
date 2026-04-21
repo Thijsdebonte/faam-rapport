@@ -1,5 +1,4 @@
-// Rendered at exactly A4 landscape: 1123 × 794 px (96 dpi)
-export default function VacancyPage({ vacancy, project }) {
+export default function VacancyPage({ vacancy, project, isFirst }) {
   const clarity = vacancy.clarityData
   const meta = vacancy.metaData
 
@@ -7,308 +6,254 @@ export default function VacancyPage({ vacancy, project }) {
     <div
       className="pdf-page-break"
       style={{
-        width: '1123px',
-        height: '794px',
+        width: '100%',
+        aspectRatio: '210 / 297',
         background: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
-        flexShrink: 0,
+        position: 'relative',
         fontFamily: 'system-ui, -apple-system, sans-serif',
+        overflow: 'hidden',
         pageBreakBefore: 'always',
       }}
     >
-      {/* ── Header bar ── */}
+      {/* Header */}
       <div
         style={{
-          height: '72px',
           background: '#242a2e',
+          padding: '3.5% 6%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 40px',
           flexShrink: 0,
         }}
       >
-        <img
-          src="/faam-logo-wit-groen.png"
-          alt="Faam"
-          crossOrigin="anonymous"
-          style={{ height: '26px', objectFit: 'contain' }}
-        />
-        <div style={{ textAlign: 'center' }}>
+        <div>
           <p
             style={{
-              color: 'rgba(255,255,255,0.35)',
-              fontSize: '9px',
-              letterSpacing: '2px',
+              color: 'rgba(255,255,255,0.4)',
+              fontSize: '1vw',
               textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              margin: '0 0 4px',
               fontWeight: '600',
-              margin: '0 0 3px',
             }}
           >
             Wervingsrapport · {project.clientName}
           </p>
           <h2
             style={{
-              color: '#ffffff',
-              fontSize: '20px',
+              color: 'white',
+              fontSize: '2.2vw',
               fontWeight: '700',
               margin: 0,
-              letterSpacing: '-0.2px',
+              letterSpacing: '-0.3px',
             }}
           >
             {vacancy.name}
           </h2>
-        </div>
-        <div style={{ textAlign: 'right' }}>
           {project.periodFrom && project.periodTo && (
-            <p style={{ color: '#04ba7e', fontSize: '11px', fontWeight: '600', margin: 0 }}>
-              {formatDate(project.periodFrom)}
-              <br />
-              {formatDate(project.periodTo)}
+            <p style={{ color: '#04ba7e', fontSize: '1.1vw', margin: '4px 0 0', fontWeight: '500' }}>
+              {formatDate(project.periodFrom)} – {formatDate(project.periodTo)}
             </p>
           )}
         </div>
+        <img
+          src="/faam-logo-wit-groen.png"
+          alt="Faam"
+          style={{ height: '28px', objectFit: 'contain' }}
+          crossOrigin="anonymous"
+        />
       </div>
 
-      {/* ── 3-column content ── */}
+      {/* Content */}
       <div
         style={{
           flex: 1,
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gap: '0',
+          padding: '4% 6%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4%',
           overflow: 'hidden',
         }}
       >
-        {/* Column 1: Faam.nl */}
-        <Column color="#3b82f6" title="Faam.nl — vacaturepagina" borderRight>
-          <MetricCard
-            label="Bezoekers vacaturepagina"
-            value={clarity ? formatNum(clarity.visitors) : '–'}
-            color="#3b82f6"
-          />
-          <MetricCard
-            label="Gemiddelde sessieduur"
-            value={clarity ? `${clarity.avgDuration ?? '–'} sec` : '–'}
-            color="#3b82f6"
-          />
-          <MetricCard
-            label="Gemiddeld scroll%"
-            value={clarity ? `${clarity.avgScroll ?? '–'}%` : '–'}
-            color="#3b82f6"
-          />
-        </Column>
+        {/* Section: Faam.nl */}
+        <Section
+          title="Algemene informatie Faam.nl"
+          color="#3b82f6"
+        >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2%' }}>
+            <MetricCard
+              label="Bezoekers vacaturepagina"
+              value={clarity ? formatNum(clarity.visitors) : '–'}
+              color="#3b82f6"
+            />
+            <MetricCard
+              label="Gemiddelde sessieduur"
+              value={clarity ? `${clarity.avgDuration ?? '–'}s` : '–'}
+              color="#3b82f6"
+            />
+            <MetricCard
+              label="Gemiddeld scroll%"
+              value={clarity ? `${clarity.avgScroll ?? '–'}%` : '–'}
+              color="#3b82f6"
+            />
+          </div>
+        </Section>
 
-        {/* Column 2: Meta Ads */}
-        <Column color="#8b5cf6" title="Vacatureadvertenties" borderRight>
-          <MetricCard
-            label="Aantal vertoningen"
-            value={meta ? formatNum(meta.impressions) : '–'}
-            color="#8b5cf6"
-          />
-          <MetricCard
-            label="Uniek bereik"
-            value={meta ? formatNum(meta.reach) : '–'}
-            color="#8b5cf6"
-          />
-        </Column>
+        {/* Section: Meta Ads */}
+        <Section
+          title="Algemene informatie vacatureadvertenties"
+          color="#8b5cf6"
+        >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2%' }}>
+            <MetricCard
+              label="Aantal vertoningen"
+              value={meta ? formatNum(meta.impressions) : '–'}
+              color="#8b5cf6"
+            />
+            <MetricCard
+              label="Uniek bereik"
+              value={meta ? formatNum(meta.reach) : '–'}
+              color="#8b5cf6"
+            />
+          </div>
+        </Section>
 
-        {/* Column 3: Sollicitaties */}
-        <Column color="#04ba7e" title="Sollicitaties">
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-            }}
-          >
-            {/* Hero metric */}
+        {/* Section: Applications */}
+        <Section
+          title="Sollicitaties"
+          color="#04ba7e"
+        >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2%' }}>
+            <MetricCard
+              label="Aantal sollicitaties"
+              value={vacancy.applications !== '' ? String(vacancy.applications) : '–'}
+              color="#04ba7e"
+              large
+            />
             <div
               style={{
-                background: '#f0fdf8',
-                border: '1px solid #d1fae5',
+                background: 'linear-gradient(135deg, #f0fdf8 0%, #e8fdf5 100%)',
                 borderRadius: '10px',
-                padding: '24px 20px',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0, left: 0, right: 0,
-                  height: '3px',
-                  background: '#04ba7e',
-                }}
-              />
-              <p style={{ fontSize: '11px', color: '#888', fontWeight: '500', margin: '0 0 8px' }}>
-                Aantal sollicitaties
-              </p>
-              <span
-                style={{
-                  fontSize: '80px',
-                  fontWeight: '800',
-                  color: '#242a2e',
-                  lineHeight: 1,
-                  letterSpacing: '-2px',
-                  display: 'block',
-                }}
-              >
-                {vacancy.applications !== '' ? String(vacancy.applications) : '–'}
-              </span>
-            </div>
-
-            {/* Description box */}
-            <div
-              style={{
-                flex: 1,
-                background: '#242a2e',
-                borderRadius: '10px',
-                padding: '20px',
+                padding: '4%',
                 display: 'flex',
                 alignItems: 'center',
+                border: '1px solid #d1fae5',
               }}
             >
-              <p
-                style={{
-                  color: 'rgba(255,255,255,0.7)',
-                  fontSize: '12px',
-                  lineHeight: 1.7,
-                  margin: 0,
-                }}
-              >
-                Via gerichte Meta-advertenties en een geoptimaliseerde vacaturepagina op{' '}
-                <span style={{ color: '#04ba7e', fontWeight: '600' }}>Faam.nl</span> zijn
-                actieve en passieve kandidaten bereikt voor de positie{' '}
-                <strong style={{ color: 'white' }}>{vacancy.name}</strong>.
+              <p style={{ color: '#059669', fontSize: '1.1vw', lineHeight: 1.5, margin: 0 }}>
+                Via gerichte Meta-advertenties en een geoptimaliseerde vacaturepagina op Faam.nl
+                zijn actieve en passieve kandidaten bereikt voor de positie{' '}
+                <strong>{vacancy.name}</strong>.
               </p>
             </div>
           </div>
-        </Column>
+        </Section>
       </div>
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <div
         style={{
-          height: '32px',
           background: '#f8f9fa',
-          borderTop: '1px solid #ececec',
+          borderTop: '1px solid #e9ecef',
+          padding: '1.5% 6%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 40px',
           flexShrink: 0,
         }}
       >
-        <span style={{ color: '#bbb', fontSize: '10px', letterSpacing: '0.5px' }}>
+        <span style={{ color: '#aaa', fontSize: '0.9vw' }}>
           Vertrouwelijk · {project.clientName}
         </span>
-        <span style={{ color: '#04ba7e', fontSize: '10px', fontWeight: '700', letterSpacing: '0.5px' }}>
-          faam.nl
-        </span>
+        <span style={{ color: '#04ba7e', fontSize: '0.9vw', fontWeight: '600' }}>faam.nl</span>
       </div>
     </div>
   )
 }
 
-function Column({ color, title, children, borderRight = false }) {
+function Section({ title, color, children }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '24px 28px',
-        borderRight: borderRight ? '1px solid #f0f0f0' : 'none',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Section header */}
+    <div>
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          marginBottom: '16px',
-          flexShrink: 0,
+          marginBottom: '2%',
         }}
       >
         <div
           style={{
             width: '3px',
-            height: '14px',
+            height: '18px',
             background: color,
             borderRadius: '2px',
             flexShrink: 0,
           }}
         />
-        <span
+        <h3
           style={{
-            fontSize: '10px',
+            fontSize: '1.1vw',
             fontWeight: '700',
-            color: '#555',
+            color: '#242a2e',
+            margin: 0,
             textTransform: 'uppercase',
-            letterSpacing: '1.2px',
+            letterSpacing: '0.8px',
           }}
         >
           {title}
-        </span>
+        </h3>
       </div>
-
-      {/* Cards */}
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          overflow: 'hidden',
-        }}
-      >
-        {children}
-      </div>
+      {children}
     </div>
   )
 }
 
-function MetricCard({ label, value, color }) {
+function MetricCard({ label, value, color, large = false }) {
   return (
     <div
       style={{
-        flex: 1,
         background: 'white',
-        border: '1px solid #f0f0f0',
         borderRadius: '10px',
-        padding: '16px 18px',
+        padding: '4%',
+        border: '1px solid #f0f0f0',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        gap: '6px',
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
       }}
     >
       <div
         style={{
           position: 'absolute',
-          top: 0, left: 0, right: 0,
+          top: 0,
+          left: 0,
+          right: 0,
           height: '3px',
           background: color,
         }}
       />
-      <span style={{ fontSize: '11px', color: '#999', fontWeight: '500', lineHeight: 1.4 }}>
+      <span
+        style={{
+          fontSize: '1vw',
+          color: '#888',
+          fontWeight: '500',
+          lineHeight: 1.3,
+        }}
+      >
         {label}
       </span>
       <span
         style={{
-          fontSize: '48px',
+          fontSize: large ? '3.5vw' : '2.8vw',
           fontWeight: '800',
           color: '#242a2e',
           lineHeight: 1,
-          letterSpacing: '-1.5px',
-          marginTop: '8px',
+          letterSpacing: '-1px',
         }}
       >
         {value}
@@ -325,5 +270,5 @@ function formatNum(n) {
 function formatDate(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr)
-  return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })
+  return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
 }
